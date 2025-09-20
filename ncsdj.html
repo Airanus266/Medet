@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Все идеи</title>
+   <style>
+      /* Общий фон с анимацией */
+      body {
+         margin: 0;
+         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+         background: linear-gradient(135deg, #070F51, #F88505, #ff3c78);
+         background-size: 300% 300%;
+         animation: gradientMove 12s ease infinite;
+         color: white;
+      }
+
+      @keyframes gradientMove {
+         0% {
+            background-position: 0% 50%;
+         }
+
+         50% {
+            background-position: 100% 50%;
+         }
+
+         100% {
+            background-position: 0% 50%;
+         }
+      }
+
+      /* Шапка */
+      header {
+         position: sticky;
+         top: 0;
+         z-index: 10;
+         text-align: center;
+         padding: 20px;
+         background: rgba(7, 15, 81, 0.85);
+         backdrop-filter: blur(10px);
+         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      header h1 {
+         margin: 0;
+         font-size: 28px;
+         letter-spacing: 1px;
+         color: #fff;
+         text-shadow: 0 0 10px rgba(248, 133, 5, 0.7);
+      }
+
+      /* Контейнер */
+      .container {
+         max-width: 1000px;
+         margin: 30px auto;
+         padding: 20px;
+      }
+
+      /* Панель управления */
+      .controls {
+         display: flex;
+         justify-content: space-between;
+         flex-wrap: wrap;
+         gap: 10px;
+         margin-bottom: 25px;
+      }
+
+      .controls input {
+         flex: 1;
+         padding: 12px 15px;
+         border: none;
+         border-radius: 12px;
+         font-size: 16px;
+         outline: none;
+         background: rgba(255, 255, 255, 0.15);
+         color: white;
+         backdrop-filter: blur(8px);
+         transition: 0.3s;
+      }
+
+      .controls input:focus {
+         background: rgba(255, 255, 255, 0.25);
+         box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+      }
+
+      .controls button {
+         padding: 12px 20px;
+         border: none;
+         border-radius: 12px;
+         font-size: 16px;
+         font-weight: bold;
+         background: linear-gradient(135deg, #F88505, #ff3c78);
+         color: white;
+         cursor: pointer;
+         transition: transform 0.2s, box-shadow 0.2s;
+      }
+
+      .controls button:hover {
+         transform: translateY(-2px);
+         box-shadow: 0 6px 20px rgba(255, 60, 120, 0.5);
+      }
+
+      /* Карточки идей */
+      .idea-card {
+         background: rgba(255, 255, 255, 0.12);
+         padding: 20px;
+         margin-bottom: 20px;
+         border-radius: 16px;
+         backdrop-filter: blur(12px);
+         box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3);
+         transition: transform 0.3s, box-shadow 0.3s;
+         animation: fadeIn 0.4s ease;
+      }
+
+      .idea-card:hover {
+         transform: translateY(-5px);
+         box-shadow: 0 12px 35px rgba(248, 133, 5, 0.4);
+      }
+
+      .idea-card h3 {
+         margin: 0 0 8px;
+         font-size: 20px;
+         color: #ff9c33;
+         text-shadow: 0 0 6px rgba(255, 156, 51, 0.6);
+      }
+
+      .idea-card p {
+         margin: 0;
+         font-size: 16px;
+         line-height: 1.5;
+      }
+
+      .idea-card small {
+         display: block;
+         margin-top: 10px;
+         color: #ddd;
+         font-size: 14px;
+      }
+
+      /* Анимация появления */
+      @keyframes fadeIn {
+         from {
+            opacity: 0;
+            transform: translateY(15px);
+         }
+
+         to {
+            opacity: 1;
+            transform: translateY(0);
+         }
+      }
+   </style>
+</head>
+
+<body>
+   <header>
+      <h1>💡 Предложения студентов</h1>
+   </header>
+
+   <div class="container">
+      <div class="controls">
+         <input type="text" id="searchInput" placeholder="🔍 Поиск по идеям..." oninput="renderIdeas()">
+         <button onclick="sortByDate()">📅 По дате</button>
+         <button onclick="sortByName()">🔠 По имени</button>
+      </div>
+      <div id="ideasList"></div>
+   </div>
+
+   <script>
+      let suggestions = JSON.parse(localStorage.getItem('suggestions') || '[]');
+
+      function renderIdeas() {
+         const search = document.getElementById('searchInput').value.toLowerCase();
+         const list = document.getElementById('ideasList');
+         list.innerHTML = '';
+
+         const filtered = suggestions.filter(item =>
+            item.name.toLowerCase().includes(search) ||
+            item.idea.toLowerCase().includes(search)
+         );
+
+         filtered.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'idea-card';
+            card.innerHTML = `
+          <h3>${item.name}</h3>
+          <p>${item.idea}</p>
+          <small>${item.date}</small>
+        `;
+            list.appendChild(card);
+         });
+      }
+
+      function sortByDate() {
+         suggestions.sort((a, b) => new Date(b.date) - new Date(a.date));
+         renderIdeas();
+      }
+
+      function sortByName() {
+         suggestions.sort((a, b) => a.name.localeCompare(b.name));
+         renderIdeas();
+      }
+
+      renderIdeas();
+   </script>
+</body>
+
+</html>
